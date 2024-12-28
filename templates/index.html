@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amharic Hate Speech Detector</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        textarea {
+            width: 80%;
+            height: 100px;
+            padding: 10px;
+            margin: 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Amharic Hate Speech Detector</h1>
+    <div class="form-container">
+        <textarea id="textInput" placeholder="Enter Amharic text here..."></textarea>
+        <br>
+        <button onclick="predictText()">Submit</button>
+    </div>
+    <div id="result" class="result"></div>
+
+    <script>
+        async function predictText() {
+            const textInput = document.getElementById("textInput").value;
+            const resultDiv = document.getElementById("result");
+
+            // Clear previous result
+            resultDiv.innerHTML = "";
+
+            if (!textInput.trim()) {
+                resultDiv.textContent = "Please enter some text.";
+                resultDiv.className = "result error";
+                return;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/predict/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ text: textInput })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.prediction === "free") {
+                        resultDiv.innerHTML = `The text is <span style="color:green;">Free Speech</span>`;
+                    } else if (data.prediction === "hate") {
+                        resultDiv.innerHTML = `The text is <span style="color:red;">Hate Speech</span>`;
+                    } else {
+                        resultDiv.textContent = "Unable to determine the prediction.";
+                        resultDiv.className = "result error";
+                    }
+                } else {
+                    resultDiv.textContent = "An error occurred while processing your request.";
+                    resultDiv.className = "result error";
+                }
+            } catch (error) {
+                resultDiv.textContent = "Failed to connect to the server.";
+                resultDiv.className = "result error";
+            }
+        }
+    </script>
+</body>
+</html>
