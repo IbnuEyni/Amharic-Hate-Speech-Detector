@@ -152,5 +152,3 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## Contact
 
 For questions or support, contact [shuaibahmedin@gmail.com](mailto:shuaibahmedin@gmail.com).
-
-```
